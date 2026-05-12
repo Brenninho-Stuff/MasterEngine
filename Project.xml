@@ -1,32 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project>
 
-	<app title="Friday Night Funkin' Master Engine" file="MasterEngine" packageName="com.master.funkin" package="com.master.funkin" main="Main" version="0.1.0" company="Brenninho" />
-<app title="FNF: Master Engine" if="mobile" />
+	<!-- ============================================================ -->
+	<!--  APP METADATA                                                -->
+	<!-- ============================================================ -->
 
-	<set name="APP_ID" value="0x0100f6c013bbc000" />
+	<app title="Friday Night Funkin' Master Engine" file="MasterEngine"
+		packageName="com.master.funkin" package="com.master.funkin"
+		main="Main" version="0.1.0" company="Brenninho" />
 
+	<app title="FNF: Master Engine" if="mobile" />
 	<app preloader="flixel.system.FlxPreloader" />
 
+	<set name="APP_ID" value="0x0100f6c013bbc000" />
 	<set name="SWF_VERSION" value="11.8" />
 
-	<window width="1280" height="720" fps="144" background="#000000" hardware="true" vsync="false" />
-	<window if="html5" resizable="true" />
-	<window if="desktop" orientation="landscape" fullscreen="false" resizable="true" vsync="false"/>
-	<window if="mobile" orientation="landscape" fullscreen="true" width="0" height="0" resizable="false"/>
-	<window if="switch" orientation="landscape" fullscreen="true" width="0" height="0" resizable="true" />
+	<!-- ============================================================ -->
+	<!--  WINDOW SETTINGS                                             -->
+	<!-- ============================================================ -->
 
-	<set name="BUILD_DIR" value="export/debug" if="debug" />
+	<window width="1280" height="720" fps="144" background="#000000"
+		hardware="true" vsync="false" />
+
+	<window if="html5"    resizable="true" />
+	<window if="desktop"  orientation="landscape" fullscreen="false" resizable="true" vsync="false" />
+	<window if="mobile"   orientation="landscape" fullscreen="true"  width="0" height="0" resizable="false" />
+	<window if="switch"   orientation="landscape" fullscreen="true"  width="0" height="0" resizable="true" />
+
+	<!-- ============================================================ -->
+	<!--  BUILD OUTPUT DIRECTORIES                                    -->
+	<!-- ============================================================ -->
+
+	<set name="BUILD_DIR" value="export/debug"   if="debug" />
 	<set name="BUILD_DIR" value="export/release" unless="debug" />
-	<set name="BUILD_DIR" value="export/32bit" if="32bit" />
+	<set name="BUILD_DIR" value="export/32bit"   if="32bit" />
+
+	<!-- ============================================================ -->
+	<!--  SOURCE & ASSETS                                             -->
+	<!-- ============================================================ -->
 
 	<classpath name="source" />
 
-	<assets path="assets/preload" rename="assets" exclude="*.ogg" if="web"/>
-	<assets path="assets/preload" rename="assets" exclude="*.mp3" unless="web"/>
+	<assets path="assets/preload" rename="assets" exclude="*.ogg" if="web" />
+	<assets path="assets/preload" rename="assets" exclude="*.mp3" unless="web" />
 
-	<define name="PRELOAD_ALL" unless="web" />
-	<define name="NO_PRELOAD_ALL" unless="PRELOAD_ALL"/>
+	<!-- Preload all libraries on non-web targets -->
+	<define name="PRELOAD_ALL"    unless="web" />
+	<define name="NO_PRELOAD_ALL" unless="PRELOAD_ALL" />
 
 	<section if="PRELOAD_ALL">
 		<library name="songs"    preload="true" />
@@ -54,94 +74,150 @@
 		<library name="week7"    preload="false" />
 	</section>
 
+	<!-- Characters always preloaded -->
 	<library name="characters" preload="true" />
 
-	<assets path="assets/characters" library="characters"   exclude="*.fla|*.ogg" if="web"/>
-	<assets path="assets/characters" library="characters"   exclude="*.fla|*.mp3" unless="web"/>
-	<assets path="assets/songs"      library="songs"        exclude="*.fla|*.ogg" if="web"/>
-	<assets path="assets/songs"      library="songs"        exclude="*.fla|*.mp3" unless="web"/>
-	<assets path="assets/shared"     library="shared"       exclude="*.fla|*.ogg" if="web"/>
-	<assets path="assets/shared"     library="shared"       exclude="*.fla|*.mp3" unless="web"/>
-	<assets path="assets/tutorial"   library="tutorial"     exclude="*.fla|*.ogg" if="web"/>
-	<assets path="assets/tutorial"   library="tutorial"     exclude="*.fla|*.mp3" unless="web"/>
-	<assets path="assets/week1"      library="week1"        exclude="*.fla|*.ogg" if="web"/>
-	<assets path="assets/week1"      library="week1"        exclude="*.fla|*.mp3" unless="web"/>
-	<assets path="assets/week2"      library="week2"        exclude="*.fla|*.ogg" if="web"/>
-	<assets path="assets/week2"      library="week2"        exclude="*.fla|*.mp3" unless="web"/>
-	<assets path="assets/week3"      library="week3"        exclude="*.fla|*.ogg" if="web"/>
-	<assets path="assets/week3"      library="week3"        exclude="*.fla|*.mp3" unless="web"/>
-	<assets path="assets/week4"      library="week4"        exclude="*.fla|*.ogg" if="web"/>
-	<assets path="assets/week4"      library="week4"        exclude="*.fla|*.mp3" unless="web"/>
-	<assets path="assets/week5"      library="week5"        exclude="*.fla|*.ogg" if="web"/>
-	<assets path="assets/week5"      library="week5"        exclude="*.fla|*.mp3" unless="web"/>
-	<assets path="assets/week6"      library="week6"        exclude="*.fla|*.ogg" if="web"/>
-	<assets path="assets/week6"      library="week6"        exclude="*.fla|*.mp3" unless="web"/>
-	<assets path="assets/week7"      library="week7"        exclude="*.fla|*.ogg" if="web"/>
-	<assets path="assets/week7"      library="week7"        exclude="*.fla|*.mp3" unless="web"/>
+	<!-- Asset libraries (web excludes .ogg; native excludes .mp3) -->
+	<assets path="assets/characters" library="characters" exclude="*.fla|*.ogg" if="web" />
+	<assets path="assets/characters" library="characters" exclude="*.fla|*.mp3" unless="web" />
+	<assets path="assets/songs"      library="songs"      exclude="*.fla|*.ogg" if="web" />
+	<assets path="assets/songs"      library="songs"      exclude="*.fla|*.mp3" unless="web" />
+	<assets path="assets/shared"     library="shared"     exclude="*.fla|*.ogg" if="web" />
+	<assets path="assets/shared"     library="shared"     exclude="*.fla|*.mp3" unless="web" />
+	<assets path="assets/tutorial"   library="tutorial"   exclude="*.fla|*.ogg" if="web" />
+	<assets path="assets/tutorial"   library="tutorial"   exclude="*.fla|*.mp3" unless="web" />
+	<assets path="assets/week1"      library="week1"      exclude="*.fla|*.ogg" if="web" />
+	<assets path="assets/week1"      library="week1"      exclude="*.fla|*.mp3" unless="web" />
+	<assets path="assets/week2"      library="week2"      exclude="*.fla|*.ogg" if="web" />
+	<assets path="assets/week2"      library="week2"      exclude="*.fla|*.mp3" unless="web" />
+	<assets path="assets/week3"      library="week3"      exclude="*.fla|*.ogg" if="web" />
+	<assets path="assets/week3"      library="week3"      exclude="*.fla|*.mp3" unless="web" />
+	<assets path="assets/week4"      library="week4"      exclude="*.fla|*.ogg" if="web" />
+	<assets path="assets/week4"      library="week4"      exclude="*.fla|*.mp3" unless="web" />
+	<assets path="assets/week5"      library="week5"      exclude="*.fla|*.ogg" if="web" />
+	<assets path="assets/week5"      library="week5"      exclude="*.fla|*.mp3" unless="web" />
+	<assets path="assets/week6"      library="week6"      exclude="*.fla|*.ogg" if="web" />
+	<assets path="assets/week6"      library="week6"      exclude="*.fla|*.mp3" unless="web" />
+	<assets path="assets/week7"      library="week7"      exclude="*.fla|*.ogg" if="web" />
+	<assets path="assets/week7"      library="week7"      exclude="*.fla|*.mp3" unless="web" />
 
+	<!-- Misc assets -->
 	<template path="example_mods" rename="mods" />
-	<assets path='art/readme.txt' rename='do NOT readme.txt' />
-	<assets path="CHANGELOG.md" rename='changelog.txt'/>
-	<assets path="assets/fonts" embed='true'/>
+	<assets path="art/readme.txt"  rename="do NOT readme.txt" />
+	<assets path="CHANGELOG.md"    rename="changelog.txt" />
+	<assets path="assets/fonts"    embed="true" />
+
+	<!-- ============================================================ -->
+	<!--  HAXE LIBRARIES                                              -->
+	<!-- ============================================================ -->
 
 	<haxelib name="flixel" />
-	<haxedev set='webgl' />
 	<haxelib name="flixel-addons" />
-	<haxelib name="hscript" />
 	<haxelib name="flixel-ui" />
-	<haxelib name="polymod"/>
+	<haxelib name="hscript" />
+	<haxelib name="polymod" />
 
-	<haxedef name="FLX_NO_DEBUG" unless="debug" />
+	<!-- ============================================================ -->
+	<!--  COMPILER FLAGS                                              -->
+	<!-- ============================================================ -->
+
+	<!-- Disable Flixel debug overlay and Nape debug in release builds -->
+	<haxedef name="FLX_NO_DEBUG"       unless="debug" />
 	<haxedef name="NAPE_RELEASE_BUILD" unless="debug" />
-	<haxedef name="message.reporting" value="pretty" />
 
-	<icon path="art/icon16.png" size='16'/>
-	<icon path="art/icon32.png" size='32'/>
-	<icon path="art/icon64.png" size='64'/>
+	<!-- Full DCE and no traces in release -->
+	<haxeflag name="--dce full"       if="release" />
+	<haxeflag name="--no-traces"      unless="debug" />
+
+	<!-- FIX: was incorrectly declared as haxedef; this is a Haxe compiler flag -->
+	<haxeflag name="-D message.reporting=pretty" />
+
+	<!-- WebGL support for HTML5 -->
+	<!-- FIX: was invalid <haxedev set='webgl' /> -->
+	<haxedef name="webgl" if="html5" />
+
+	<!-- ============================================================ -->
+	<!--  APP ICONS                                                   -->
+	<!-- ============================================================ -->
+
+	<icon path="art/icon16.png"  size="16" />
+	<icon path="art/icon32.png"  size="32" />
+	<icon path="art/icon64.png"  size="64" />
 	<icon path="art/iconOG.png" />
 
-	<haxedef name="CAN_OPEN_LINKS" unless="switch"/>
-	<haxedef name="CAN_CHEAT" if="switch debug"/>
+	<!-- ============================================================ -->
+	<!--  FEATURE FLAGS                                               -->
+	<!-- ============================================================ -->
 
-	<haxeflag name="--dce full" if="release" />
-	<haxeflag name="--no-traces" unless="debug" />
+	<haxedef name="CAN_OPEN_LINKS" unless="switch" />
+	<haxedef name="CAN_CHEAT"      if="switch debug" />
+	<haxedef name="VOICES_GROUP"   unless="DISABLE_VOICES_GROUP" />
 
-	<define name="VIDEO_WEB" if="html5"/>
-	<define name="VIDEO_DESKTOP" if="desktop || android" unless="hl"/>
-	<haxelib name="hxCodec" if="VIDEO_DESKTOP" unless="VIDEO_WEB"/>
+	<!-- ============================================================ -->
+	<!--  VIDEO CODEC                                                 -->
+	<!-- ============================================================ -->
 
-	<define name="VOICES_GROUP" unless="DISABLE_VOICES_GROUP"/>
+	<define name="VIDEO_WEB"     if="html5" />
+	<define name="VIDEO_DESKTOP" if="desktop || android" unless="hl" />
+
+	<haxelib name="hxCodec" if="VIDEO_DESKTOP" unless="VIDEO_WEB" />
+
+	<!-- ============================================================ -->
+	<!--  DESKTOP PLATFORM                                            -->
+	<!-- ============================================================ -->
+
+	<section if="desktop">
+		<haxedef name="DESKTOP" />
+	</section>
+
+	<!-- ============================================================ -->
+	<!--  ANDROID PLATFORM                                            -->
+	<!-- ============================================================ -->
 
 	<section if="android">
 		<architecture name="arm64" />
 		<architecture name="armv7" />
-		<android minSdkVersion="21" targetSdkVersion="33" />
+		<android minSdkVersion="21" targetSdkVersion="34" />
+
 		<permission android:name="android.permission.INTERNET" />
 		<permission android:name="android.permission.VIBRATE" />
 		<permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 		<permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 		<permission android:name="android.permission.READ_MEDIA_AUDIO" />
 		<permission android:name="android.permission.READ_MEDIA_IMAGES" />
+
 		<haxedef name="MOBILE" />
 		<haxedef name="ANDROID" />
 		<haxedef name="FLX_NO_NATIVE_CURSOR" />
 	</section>
 
+	<!-- ============================================================ -->
+	<!--  IOS PLATFORM                                                -->
+	<!-- ============================================================ -->
+
 	<section if="ios">
 		<set name="DEPLOYMENT_TARGET" value="13.0" />
 		<ios deployment-target="13.0" />
 		<plist>
-	<key>NSMicrophoneUsageDescription</key>
-	<string>This app does not use the microphone, but the API requires a declaration.</string>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Access required to save screenshots.</string>
-</plist>
+			<key>NSMicrophoneUsageDescription</key>
+			<string>This app does not use the microphone, but the API requires a declaration.</string>
+			<key>NSPhotoLibraryUsageDescription</key>
+			<string>Access required to save screenshots.</string>
+		</plist>
+
 		<haxedef name="MOBILE" />
 		<haxedef name="IOS" />
 		<haxedef name="FLX_NO_NATIVE_CURSOR" />
 	</section>
 
+	<!-- ============================================================ -->
+	<!--  SHARED MOBILE FLAGS (applies to both Android and iOS)       -->
+	<!-- ============================================================ -->
+
 	<section if="mobile">
 		<haxedef name="FLX_NO_MOUSE" />
 		<haxedef name="FLX_NO_KEYBOARD" />
-		<haxedef name
+		<haxedef name="FLX_NO_NATIVE_CURSOR" />
+	</section>
+
+</project>
