@@ -1,35 +1,46 @@
 package;
 
-import haxe.Log;
 import openfl.events.UncaughtErrorEvent;
-import lime.app.Application;
-import flixel.FlxGame;
-import flixel.FlxState;
-import openfl.Lib;
 import openfl.display.FPS;
 import openfl.display.Sprite;
 import openfl.events.Event;
-import openfl.media.Video;
-import openfl.net.NetStream;
+import openfl.Lib;
+import flixel.FlxGame;
+import flixel.FlxState;
 
 using StringTools;
 
 class Main extends Sprite
 {
-	var gameWidth:Int = 1280; // Width of the game in pixels (might be less / more in actual pixels depending on your zoom).
-	var gameHeight:Int = 720; // Height of the game in pixels (might be less / more in actual pixels depending on your zoom).
-	var initialState:Class<FlxState> = TitleState; // The FlxState the game starts with.
-	var zoom:Float = -1; // If -1, zoom is automatically calculated to fit the window dimensions.
+	// Base game resolution
+	static final GAME_WIDTH:Int  = 1280;
+	static final GAME_HEIGHT:Int = 720;
+
+	// Target framerates per platform
 	#if web
-	var framerate:Int = 60; // How many frames per second the game should run at.
+	static final FRAMERATE:Int = 60;
+	#elseif mobile
+	static final FRAMERATE:Int = 60;
 	#else
-	var framerate:Int = 144; // How many frames per second the game should run at.
-
+	static final FRAMERATE:Int = 144;
 	#end
-	var skipSplash:Bool = true; // Whether to skip the flixel splash screen that appears in release mode.
-	var startFullscreen:Bool = false; // Whether to start the game in fullscreen on desktop targets
 
-	// You can pretty much ignore everything from here on - your code should go in your states.
+	/** The first FlxState loaded on startup. */
+	var initialState:Class<FlxState> = TitleState;
+
+	/** Zoom level; -1 = auto-fit to window. */
+	var zoom:Float = -1;
+
+	var skipSplash:Bool    = true;
+	var startFullscreen:Bool = false;
+
+	// Runtime dimensions (may differ from base res after zoom calc)
+	var gameWidth:Int  = GAME_WIDTH;
+	var gameHeight:Int = GAME_HEIGHT;
+
+	// ---------------------------------------------------------------
+
+	public static var fpsCounter:FPS;
 
 	public static function main():Void
 	{
@@ -40,93 +51,67 @@ class Main extends Sprite
 	{
 		super();
 
-		var introShit:Array<String> = [
-			'',
-
-			'FUNKIN LEGACY',
-			'VERSION: ${Application.current.meta.get('version')}',
-
-			'',
-
-			#if web 'WEB', #end
-			#if web ' * Video Support (openfl)', #end
-
-			#if desktop 'DESKTOP', #end
-			#if desktop ' * Video Support (hxCodec)', #end
-
-			#if sys ' * Custom Trace', #end
-
-			#if (!web && !desktop) 'UNKNOWN', #end
-
-			'',
-		];
-
-		#if sys
-		Log.trace = (v, ?infos) ->
-		{
-			Sys.println('${'${infos.fileName}:${infos.lineNumber}'.rpad(' ', 48) + ':'}'.rpad(' ', 48 + 8) + '${Std.string(v)}');
-		}
-		#end
-
-		for (thing in introShit)
-		{
-			#if sys
-			Sys.println(thing);
-			#else
-			if (thing.trim().length > 0)
-				trace(thing);
-			#end
-		}
+		// Hook global uncaught error handler before anything else
+		Lib.current.loaderInfo.uncaughtErrorEvents.addEventListener(
+			UncaughtErrorEvent.UNCAUGHT_ERROR,
+			onUncaughtError
+		);
 
 		if (stage != null)
-		{
 			init();
-		}
 		else
-		{
 			addEventListener(Event.ADDED_TO_STAGE, init);
-		}
 	}
 
-	private function init(?E:Event):Void
+	// ---------------------------------------------------------------
+	//  Init
+	// ---------------------------------------------------------------
+
+	private function init(?e:Event):Void
 	{
 		if (hasEventListener(Event.ADDED_TO_STAGE))
-		{
 			removeEventListener(Event.ADDED_TO_STAGE, init);
-		}
 
 		setupGame();
 	}
 
-	var video:Video;
-	var netStream:NetStream;
-	private var overlay:Sprite;
-
-	public static var fpsCounter:FPS;
-
 	private function setupGame():Void
 	{
-		var stageWidth:Int = Lib.current.stage.stageWidth;
+		var stageWidth:Int  = Lib.current.stage.stageWidth;
 		var stageHeight:Int = Lib.current.stage.stageHeight;
 
+		// Auto-calculate zoom to letterbox the base resolution
 		if (zoom == -1)
 		{
-			var ratioX:Float = stageWidth / gameWidth;
+			var ratioX:Float = stageWidth  / gameWidth;
 			var ratioY:Float = stageHeight / gameHeight;
-			zoom = Math.min(ratioX, ratioY);
-			gameWidth = Math.ceil(stageWidth / zoom);
+			zoom       = Math.min(ratioX, ratioY);
+			gameWidth  = Math.ceil(stageWidth  / zoom);
 			gameHeight = Math.ceil(stageHeight / zoom);
 		}
 
-		#if !debug
-		initialState = TitleState;
-		#end
+		addChild(new FlxGame(gameWidth, gameHeight, initialState, FRAMERATE, FRAMERATE, skipSplash, startFullscreen));
 
-		addChild(new FlxGame(gameWidth, gameHeight, initialState, framerate, framerate, skipSplash, startFullscreen));
-
+		// FPS counter — desktop/web only; not shown on mobile
 		#if !mobile
 		fpsCounter = new FPS(10, 3, 0xFFFFFF);
 		addChild(fpsCounter);
 		#end
+	}
+
+	// ---------------------------------------------------------------
+	//  Error handling
+	// ---------------------------------------------------------------
+
+	private function onUncaughtError(e:UncaughtErrorEvent):Void
+	{
+		e.preventDefault();
+
+		var message:String = (e.error is String)
+			? cast(e.error, String)
+			: Std.string(e.error);
+
+		// Surface a visible alert so the error isn't silently swallowed
+		lime.app.Application.current.window.alert('Uncaught error:\n$message', 'Error');
 	}
 }
