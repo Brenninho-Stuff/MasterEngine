@@ -1,0 +1,50 @@
+name: Build - Windows
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch:
+
+jobs:
+  build-windows:
+    name: Windows (x64)
+    runs-on: windows-latest
+
+    steps:
+      # ---------------------------------------------------------------
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # ---------------------------------------------------------------
+      - name: Setup Haxe
+        uses: krdlab/setup-haxe@v1
+        with:
+          haxe-version: 4.3.4
+
+      # ---------------------------------------------------------------
+      - name: Install haxelibs
+        run: |
+          haxelib install lime        --quiet
+          haxelib install openfl       --quiet
+          haxelib install flixel       --quiet
+          haxelib install flixel-addons --quiet
+          haxelib install flixel-ui    --quiet
+          haxelib install hscript      --quiet
+          haxelib install polymod      --quiet
+          haxelib install hxCodec      --quiet
+          haxelib run lime setup       -quiet
+
+      # ---------------------------------------------------------------
+      - name: Build (release)
+        run: haxelib run lime build windows -release
+
+      # ---------------------------------------------------------------
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: MasterEngine-Windows
+          path: export/release/windows/bin/
+          if-no-files-found: error
+          
